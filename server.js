@@ -34,6 +34,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/events', eventRoutes);
 // Any request to '/api/bookings' will be handled by the bookingRoutes file
 app.use('/api/bookings', bookingRoutes);
+// Any request to '/api/attractions' will be handled by the bookingRoutes file
+app.use('/api/attractions', attractionRoutes);
 
 // --- Error Handling Middleware ---
 // These must be placed after your API routes
