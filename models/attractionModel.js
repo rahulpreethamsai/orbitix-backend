@@ -11,6 +11,11 @@ const attractionSchema = mongoose.Schema(
       type: String,
       required: [true, 'Please add an event name'],
     },
+    category: {
+    type: String,
+    required: true,
+    enum: ['All','Music', 'Sports', 'Cinema', 'Tech', 'Podcasts'], 
+    },
     description: {
       type: String,
       required: [true, 'Please add a description'],

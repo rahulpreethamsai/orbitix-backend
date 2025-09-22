@@ -5,9 +5,9 @@ const Attraction = require('../models/attractionModel');
 // @route   POST /api/events
 // @access  Private
 const createAttraction = asyncHandler(async (req, res) => {
-  const { name, description, date, venue, imageUrl } = req.body;
+  const { name, category, description, date, venue, imageUrl } = req.body;
 
-  if (!name || !description || !date || !venue || !imageUrl) {
+  if (!name || !category || !description || !date || !venue || !imageUrl) {
     res.status(400);
     throw new Error('Please add all fields');
   }
@@ -15,6 +15,7 @@ const createAttraction = asyncHandler(async (req, res) => {
   const event = await Attraction.create({
     name,
     description,
+    category,
     date,
     venue,
     imageUrl,
