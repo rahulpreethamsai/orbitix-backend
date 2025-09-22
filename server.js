@@ -9,7 +9,7 @@ const errorHandler= require('./middlewares/errorhandler');
 const userRoutes = require('./routes/userRoute');
 const eventRoutes = require('./routes/eventRoute');
 const bookingRoutes = require('./routes/bookingRoute');
-
+const attractionRoutes = require('./routes/attractionRoute');
 // Load environment variables from .env file
 dotenv.config();
 

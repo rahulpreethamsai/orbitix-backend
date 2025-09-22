@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {createAttraction, getAllAttractions, getAttractionById } = require('../controllers/eventController');
+const {createAttraction, getAllAttractions, getAttractionById } = require('../controllers/attractionController');
 const { protect } = require('../middlewares/validationToken');
 
 // Public routes to get events

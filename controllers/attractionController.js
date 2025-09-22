@@ -12,7 +12,7 @@ const createAttraction = asyncHandler(async (req, res) => {
     throw new Error('Please add all fields');
   }
 
-  const event = await Event.create({
+  const event = await Attraction.create({
     name,
     description,
     date,
@@ -28,7 +28,7 @@ const createAttraction = asyncHandler(async (req, res) => {
 // @route   GET /api/events
 // @access  Public
 const getAllAttractions = asyncHandler(async (req, res) => {
-  const events = await Event.find({}).sort({ date: 1 }); // Sort by date
+  const events = await Attraction.find({}).sort({ date: 1 }); // Sort by date
   res.status(200).json(events);
 });
 
@@ -36,7 +36,7 @@ const getAllAttractions = asyncHandler(async (req, res) => {
 // @route   GET /api/events/:id
 // @access  Public
 const getAttractionById = asyncHandler(async (req, res) => {
-  const event = await Event.findById(req.params.id);
+  const event = await Attraction.findById(req.params.id);
 
   if (event) {
     res.status(200).json(event);
