@@ -14,6 +14,5 @@ router.get('/:id', getEventById);
 
 // Private route to create an event
 router.post('/', protect, createEvent);
-router.put('/:id', protect, updateEvent);
 
 module.exports = router;
