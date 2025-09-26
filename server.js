@@ -1,7 +1,8 @@
 const express = require('express');
-const http = require('http'); // Import Node's built-in http module
-const { Server } = require("socket.io"); // Import the Server class from socket.io
+const http = require('http');
+const { Server } = require("socket.io");
 const dotenv = require('dotenv');
+const cors = require('cors'); // 1. IMPORT THE CORS PACKAGE
 const connectDB = require('./config/dbConnection');
 const errorHandler = require('./middlewares/errorhandler');
 
@@ -9,13 +10,17 @@ dotenv.config();
 connectDB();
 
 const app = express();
-// This creates an HTTP server from your Express app
-const server = http.createServer(app); 
+const server = http.createServer(app);
 
-// Attach Socket.IO to the server and configure CORS
+// 2. ADD THIS SECTION TO CONFIGURE CORS FOR YOUR API
+app.use(cors({
+  origin: "https://orbitix.netlify.app" // Allow your frontend to make requests
+}));
+
+// This config is for Socket.IO and is also correct
 const io = new Server(server, {
   cors: {
-    origin: "*", // For development, you can use "*". For production, restrict this to your frontend's URL.
+    origin: "https://orbitix.netlify.app", // It's good practice to also specify the origin here
     methods: ["GET", "POST"]
   }
 });
@@ -40,7 +45,6 @@ io.on('connection', (socket) => {
   });
 
   socket.on('seatSelected', (data) => {
-    // Broadcast to everyone else in the room that a seat has been temporarily selected
     socket.to(data.eventId).emit('updateSeatStatus', {
       seatNumber: data.seatNumber,
       status: 'selected'
@@ -48,7 +52,6 @@ io.on('connection', (socket) => {
   });
 
   socket.on('seatDeselected', (data) => {
-    // Broadcast that the seat is now available again
     socket.to(data.eventId).emit('updateSeatStatus', {
         seatNumber: data.seatNumber,
         status: 'available'
@@ -61,5 +64,4 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 5000;
-// IMPORTANT: Use the 'server' object to listen, not 'app'
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
