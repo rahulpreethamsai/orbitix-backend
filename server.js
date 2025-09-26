@@ -1,60 +1,65 @@
-// Import necessary packages
 const express = require('express');
+const http = require('http'); // Import Node's built-in http module
+const { Server } = require("socket.io"); // Import the Server class from socket.io
 const dotenv = require('dotenv');
-const cors = require('cors');
 const connectDB = require('./config/dbConnection');
-const errorHandler= require('./middlewares/errorhandler');
+const errorHandler = require('./middlewares/errorhandler');
 
-// Import route files
-const userRoutes = require('./routes/userRoute');
-const eventRoutes = require('./routes/eventRoute');
-const bookingRoutes = require('./routes/bookingRoute');
-const attractionRoutes = require('./routes/attractionRoute');
-// Load environment variables from .env file
 dotenv.config();
-
-// Connect to the MongoDB database
 connectDB();
 
-// Initialize the Express app
 const app = express();
+// This creates an HTTP server from your Express app
+const server = http.createServer(app); 
 
-// Middleware to enable Cross-Origin Resource Sharing (CORS)
-// This allows your React frontend (on a different port) to communicate with this backend
-app.use(cors());
+// Attach Socket.IO to the server and configure CORS
+const io = new Server(server, {
+  cors: {
+    origin: "*", // For development, you can use "*". For production, restrict this to your frontend's URL.
+    methods: ["GET", "POST"]
+  }
+});
 
-// Middleware to parse incoming JSON requests
-// This allows us to access request body data via `req.body`
 app.use(express.json());
 
-// Define the main API routes
-// Any request to '/api/users' will be handled by the userRoutes file
-app.use('/api/users', userRoutes);
-// Any request to '/api/events' will be handled by the eventRoutes file
-app.use('/api/events', eventRoutes);
-// Any request to '/api/bookings' will be handled by the bookingRoutes file
-app.use('/api/bookings', bookingRoutes);
-// Any request to '/api/attractions' will be handled by the bookingRoutes file
-app.use('/api/attractions', attractionRoutes);
+// Your existing API routes
+app.use('/api/users', require('./routes/userRoute'));
+app.use('/api/attractions', require('./routes/attractionRoute'));
+app.use('/api/events', require('./routes/eventRoute'));
+app.use('/api/bookings', require('./routes/bookingRoute'));
 
-// --- Error Handling Middleware ---
-// These must be placed after your API routes
-// Handles requests to routes that don't exist
-
-const notFound = (req, res, next) => {
-  res.status(404);
-  throw new Error(`Not Found - ${req.originalUrl}`);
-};
-
-app.use(notFound);
-// A custom error handler that catches errors thrown in controllers
 app.use(errorHandler);
 
-// Define the port for the server to run on
-// It will use the port from the .env file, or default to 5000
-const PORT = process.env.PORT || 5000;
+// --- WebSocket Connection Logic ---
+io.on('connection', (socket) => {
+  console.log('A user connected:', socket.id);
 
-// Start the server and listen for incoming requests
-app.listen(PORT, () => {
-  console.log(`Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  socket.on('joinEventRoom', (eventId) => {
+    socket.join(eventId);
+    console.log(`Socket ${socket.id} joined room ${eventId}`);
+  });
+
+  socket.on('seatSelected', (data) => {
+    // Broadcast to everyone else in the room that a seat has been temporarily selected
+    socket.to(data.eventId).emit('updateSeatStatus', {
+      seatNumber: data.seatNumber,
+      status: 'selected'
+    });
+  });
+
+  socket.on('seatDeselected', (data) => {
+    // Broadcast that the seat is now available again
+    socket.to(data.eventId).emit('updateSeatStatus', {
+        seatNumber: data.seatNumber,
+        status: 'available'
+    });
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+  });
 });
+
+const PORT = process.env.PORT || 5000;
+// IMPORTANT: Use the 'server' object to listen, not 'app'
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
