@@ -1,13 +1,11 @@
 const mongoose = require('mongoose');
 
-// Define the schema for the Booking model
 const bookingSchema = mongoose.Schema(
   {
-    // Link to the User model to know who made the booking
     user: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: 'User', // Establishes a relationship with the 'User' collection
+      ref: 'User',
     },
     eventId: {
       type: String,
@@ -31,7 +29,7 @@ const bookingSchema = mongoose.Schema(
     },
   },
   {
-    timestamps: true, // Adds createdAt and updatedAt timestamps
+    timestamps: true,
   }
 );
 

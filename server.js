@@ -1,5 +1,4 @@
 const express = require('express');
-const http = require('http');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const connectDB = require('./config/dbConnection');
@@ -10,15 +9,12 @@ connectDB();
 
 const app = express();
 
-// 2. ADD THIS SECTION TO CONFIGURE CORS FOR YOUR API
 app.use(cors({
-  origin: "https://orbitix.netlify.app" // Allow your frontend to make requests
+  origin: "https://orbitix.netlify.app"
 }));
-
 
 app.use(express.json());
 
-// Your existing API routes
 app.use('/api/users', require('./routes/userRoute'));
 app.use('/api/attractions', require('./routes/attractionRoute'));
 app.use('/api/events', require('./routes/eventRoute'));

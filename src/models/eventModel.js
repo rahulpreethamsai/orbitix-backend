@@ -5,7 +5,7 @@ const eventSchema = mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: 'User', // Reference to the user who created the event
+      ref: 'User',
     },
     name: {
       type: String,
