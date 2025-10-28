@@ -25,7 +25,7 @@ const createBooking = asyncHandler(async (req, res) => {
 });
 
 const getMyBookings = asyncHandler(async (req, res) => {
-  const bookings = await Booking.find({ user: req.user._id }).populate('attraction');
+  const bookings = await Booking.find({ user: req.user._id });
   res.json(bookings);
 });
 
