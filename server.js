@@ -10,7 +10,7 @@ connectDB();
 const app = express();
 
 app.use(cors({
-  origin: "https://orbitix.netlify.app/"
+  origin: "https://orbitix.netlify.app"
 }));
 
 app.use(express.json());
